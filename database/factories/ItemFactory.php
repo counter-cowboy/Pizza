@@ -21,8 +21,7 @@ class ItemFactory extends Factory
 
             'cart_id' => Cart::factory(),
             'product_id' => Product::factory(),
-            'cart_id' => Cart::factory(),
-            'product_id' => Product::factory(),
+
         ];
     }
 }

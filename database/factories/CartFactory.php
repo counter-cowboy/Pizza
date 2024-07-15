@@ -15,7 +15,7 @@ class CartFactory extends Factory
         return [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'user_id' => $this->faker->randomNumber(),
+            'user_id' => $this->faker->numberBetween(1, 10),
         ];
     }
 }

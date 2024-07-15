@@ -15,7 +15,7 @@ class RoleFactory extends Factory
         return [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'role' => $this->faker->word(),
+            'role' => 'user',
         ];
     }
 }
