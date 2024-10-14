@@ -3,35 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\Collections\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        return ProductResource::collection(Product::all());
+        $this->authorize('isAdmin', Product::class);
+        return new ProductCollection(Product::paginate(10));
     }
 
     public function store(ProductRequest $request)
     {
-        if ($request->user()->cannot('store')){
-            abort(403);
-        }
+        $this->authorize('isAdmin', Product::class);
         return new ProductResource(Product::create($request->validated()));
     }
 
     public function show(Product $product)
     {
+        $this->authorize('isAdmin', Product::class);
         return new ProductResource($product);
     }
 
     public function update(ProductRequest $request, Product $product)
     {
-        if ($request->user()->cannot('update', $product)){
-            abort(403);
-        }
+        $this->authorize('isAdmin', Product::class);
         $product->update($request->validated());
 
         return new ProductResource($product);
@@ -39,11 +37,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $this->authorize('destroy', $product);
-
-//        if (Auth::user()->cannot('destroy', $product)){
-//            abort(403);
-//        }
+        $this->authorize('isAdmin', Product::class);
         $product->delete();
 
         return response()->json();

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Services\CartService;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -43,54 +46,22 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param array $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    /**
-     * protected function validator(array $data)
-     * {
-     * return Validator::make($data, [
-     * 'name' => ['required', 'string', 'max:255'],
-     * 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-     * 'password' => ['required', 'string', 'min:8', 'confirmed'],
-     * ]);
-     * }
-     */
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        $data = $request->validated();
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password'])
         ]);
-        return response()->json(compact('user'), 201);
 
+        $cart = Session::get('cart', []);
+
+        CartService::createCartForAuth($cart);
+
+        return response()->json(compact('user'), 201);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param array $data
-     * @return \App\Models\User
-     */
-    /**
-     * protected function create(array $data)
-     * {
-     * $user=User::create([
-     * 'name' => $data['name'],
-     * 'email' => $data['email'],
-     * 'password' => Hash::make($data['password']),
-     * ]);
-     * }
-     * */
 }

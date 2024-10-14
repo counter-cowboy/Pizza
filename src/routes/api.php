@@ -2,27 +2,41 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
 
 
 Route::middleware('api')
     ->prefix('auth')
-    ->group(function (){
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+    ->group(function () {
+        Route::post('login', [AuthController::class, 'login']);
+
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::post('me', [AuthController::class, 'me']);
     });
 
 Route::post('register', [RegisterController::class, 'register']);
+
+Route::apiResource('products', ProductController::class)
+    ->only(['index', 'show']);
+
+
+Route::middleware('auth:api')
+    ->group(function () {
+        Route::apiResource('products', ProductController::class)
+            ->except(['index', 'show']);
+
+        Route::apiResources([
+            'carts' => CartController::class,
+            'orders' => OrderController::class,
+            'categories' => CategoryController::class
+        ]);
+    });
+
+
+
+
