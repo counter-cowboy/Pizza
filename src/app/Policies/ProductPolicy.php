@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Response;
 
 class ProductPolicy
 {
-    public function isAdmin(User $user): Response
+    public function isAdmin(User $user)
     {
         return $user->is_admin;
     }

@@ -12,10 +12,11 @@ class CategoryFactory extends Factory
 
     public function definition(): array
     {
+        $items=['pizza', 'drink'];
         return [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'name' => $this->faker->name(),
+            'name' => $items[ array_rand($items)],
         ];
     }
 }

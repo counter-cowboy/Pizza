@@ -14,11 +14,11 @@ class CartService
         $cart = Session::get('cart', []);
 
         if (isset($cart[$productId])) {
-            return response()->json('Already in cart',);
+            return response()->json('Already in cart', 409);
         } else {
             $cart[] = $productId;
             Session::put('cart', $cart);
-            return response()->json('Added to cart');
+            return response()->json(['Added to cart', 'cart'=>$cart], 201);
         }
 
     }
@@ -32,18 +32,18 @@ class CartService
 
     }
 
-    public static function createCartForAuth($cart)
+    public static function createCartForAuth($cart, $userId): void
     {
         if (!empty($cart)) {
-            $user = Auth::user();
-            $newCart = Cart::create(['user_id' => $user->id]);
+            $newCart = Cart::create(['user_id' => $userId]);
 
             foreach ($cart as $productId => $item) {
-                $newCart->product->id = $productId;
+                $newCart->product()->attach($productId);
             }
+            Session::forget('cart');
         }
 
-        Session::forget('cart');
+     Cart::create(['user_id' => $userId]);
     }
 
 }

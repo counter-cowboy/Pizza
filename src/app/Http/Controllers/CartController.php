@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CartRequest;
+use App\Http\Resources\CartCacheResource;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Services\CartService;
@@ -29,25 +30,26 @@ class CartController extends Controller
     public function store(CartRequest $request)
     {
         // For non-authenticated users
-        if (!Auth::user()) {
-            $this->service->addToCart($request->validated()['product_id']);
+        if (!Auth::check()) {
+            $this->service->addToCart($request->product_id);
+            return response()->json(['message'=>'Items added']);
+        }else {
+
+            // For authenticated, next step - check is_authorised
+            $this->authorize('create', Cart::class);
+            $data = $request->validated();
+
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+
+            $cart->product()->attach($data['product_id']);
+
+            return new CartResource($cart);
         }
-
-        // For authenticated, next step - check is_authorised
-        $this->authorize('create', Cart::class);
-        $data = $request->validated();
-
-        $cart = Cart::firstOrCreate(['user_id' => $data['user_id']]);
-
-        $cart->product()->attach($data['product_id']);
-
-        return new CartResource($cart);
     }
 
     public function show(Cart $cart)
     {
         $this->authorize('view', $cart);
-        $cart = Cart::findOrFail($cart)->with('product');
 
         return new CartResource($cart);
     }

@@ -11,19 +11,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-
-        ];
-    }
-    public function messages(): array
-    {
-        return [
-            'name.required'=>'Required',
-            'email.required'=>'Required',
-            'email.email'=>'Must be real email',
-            'email.unique'=>'Email is not vacated',
-            'password.required'=>'Password required',
-            'password.min'=>'Minimum 6 chars'
+            'password' => 'confirmed|required|string|min:6',
         ];
     }
 

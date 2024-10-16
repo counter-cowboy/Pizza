@@ -11,6 +11,7 @@ class OrderService
     {
         $products[] = $data['products'];
         $total_amount = 0;
+
         $orderToCreate = [
             'user_id' => $user_id,
             'status' => 'in_progress',
@@ -30,7 +31,9 @@ class OrderService
 
             $some_product = Product::where('id', $prod_id)->first();
             $total_amount += $some_product->price * $quantity;
+
             $order->product()->attach($prod_id, ['quantity' => $quantity]);
+
             $productsToReturn[] = [
                 'id' => $prod_id,
                 'description' => $some_product->description,
@@ -40,13 +43,11 @@ class OrderService
                 'category' => $some_product->category->name
             ];
         }
-
         $order->total_amount = $total_amount;
         $order->save();
 
         $orderToCreate[] = $total_amount;
         $orderToCreate[] = $productsToReturn;
-
 
         return $orderToCreate;
     }

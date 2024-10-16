@@ -2,15 +2,22 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CartRequest extends FormRequest
 {
     public function rules(): array
     {
+
         return [
-            'user_id' => 'required|exists:users',
-            'product_id'=>'required'
+            'product_id' => ['required',
+                Rule::unique('cart_product')
+                    ->where(function ($query) {
+                        return $query->where('cart_id', Auth::user()->cart->id);
+                    })]
         ];
     }
 
@@ -18,12 +25,11 @@ class CartRequest extends FormRequest
     {
         return true;
     }
+
     public function messages(): array
     {
         return [
-            'user_id.required'=>'UserId required',
-            'user_id.exists'=>'Error, duplicate user_id'
+            'product_id.unique' => 'Already exists in cart'
         ];
     }
-
 }

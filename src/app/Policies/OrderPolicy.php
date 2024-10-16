@@ -27,7 +27,7 @@ class OrderPolicy
 
     public function create(User $user): bool
     {
-        return $user->id;
+        return (bool)$user->id;
     }
 
     public function update(User $user, Order $order): bool

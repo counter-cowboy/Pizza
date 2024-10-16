@@ -2,14 +2,19 @@ version: '3'
 
 services:
   php:
+    container_name: php
     build:
       dockerfile: docker/php/Dockerfile
     volumes:
       - './src:/var/www/html'
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - mysql
 
   nginx:
+    container_name: nginx
     image: nginx:latest
     ports:
       - "80:80"
@@ -20,6 +25,7 @@ services:
       - php
 
   mysql:
+    container_name: mysql
     image: mysql:8.0.30
     ports:
       - "3306:3306"
@@ -31,6 +37,7 @@ services:
       - './docker/volume/mysql:/var/lib/mysql'
 
   phpmyadmin:
+    container_name: phpadmin
     image: phpmyadmin/phpmyadmin
     ports:
       - "9090:80"
@@ -39,3 +46,9 @@ services:
       - PMA_PORT=3306
     depends_on:
       - mysql
+
+#  redis:
+#    container_name: redis
+#    image: redis:alpine
+#    ports:
+#      - "6379:6379"

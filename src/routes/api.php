@@ -12,26 +12,28 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('api')
     ->prefix('auth')
     ->group(function () {
-        Route::post('login', [AuthController::class, 'login']);
-
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::post('me', [AuthController::class, 'me']);
     });
 
+Route::post('login', [AuthController::class, 'login']);
+
 Route::post('register', [RegisterController::class, 'register']);
 
 Route::apiResource('products', ProductController::class)
     ->only(['index', 'show']);
+Route::post('carts', [CartController::class, 'store']);
 
 
 Route::middleware('auth:api')
     ->group(function () {
         Route::apiResource('products', ProductController::class)
             ->except(['index', 'show']);
+        Route::apiResource('carts', CartController::class)
+        ->except('store');
 
         Route::apiResources([
-            'carts' => CartController::class,
             'orders' => OrderController::class,
             'categories' => CategoryController::class
         ]);

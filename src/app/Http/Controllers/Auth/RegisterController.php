@@ -34,7 +34,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+//    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -59,7 +59,8 @@ class RegisterController extends Controller
 
         $cart = Session::get('cart', []);
 
-        CartService::createCartForAuth($cart);
+
+        CartService::createCartForAuth($cart, $user->id);
 
         return response()->json(compact('user'), 201);
     }

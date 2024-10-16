@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -17,9 +18,9 @@ class ProductFactory extends Factory
             'updated_at' => Carbon::now(),
             'name' => $this->faker->name(),
             'description' => $this->faker->text(),
-            'price' => $this->faker->randomFloat(),
+            'price' => $this->faker->randomFloat(2,5,255),
             'image' => $this->faker->word(),
-            'category_id' => $this->faker->randomNumber(),
+            'category_id' => Category::all()->random()->id
         ];
     }
 }

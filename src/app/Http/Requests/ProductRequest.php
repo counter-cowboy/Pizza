@@ -12,8 +12,17 @@ class ProductRequest extends FormRequest
             'name' => ['required'],
             'description' => ['required'],
             'price' => ['required', 'numeric'],
-            'image' => ['required'],
+            'image' => ['required','string'],
             'category_id' => ['required', 'integer'],
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'name.required'=>"Product name required",
+            'description.required'=>'Describe the product',
+            'image.required'=>'Attach picture for the product',
+            'category_id'=>'Can not add product wothout category'
         ];
     }
 

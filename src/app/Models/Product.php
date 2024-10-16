@@ -12,7 +12,7 @@ class Product extends Model
     use HasFactory;
 
     protected $table = 'products';
-    protected $with = 'categories';
+    protected $with = 'category';
     protected $fillable = [
         'name',
         'description',
@@ -34,5 +34,10 @@ class Product extends Model
     public function order(): BelongsToMany
     {
         return $this->belongsToMany(Order::class);
+    }
+
+    public function scopeWhereCategoryId($query, $catId)
+    {
+        return $query->where('category_id', $catId);
     }
 }
