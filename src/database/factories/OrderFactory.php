@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -16,15 +17,29 @@ class OrderFactory extends Factory
         return [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'total_amount' => $this->faker->randomFloat(),
-            'status' => $this->faker->word(),
+            'total_amount' => $this->faker->randomFloat(2, 1, 200),
+            'status' => $this->faker->randomElement(['in_progress', 'delivering', 'delivered', 'canceled']),
             'address' => $this->faker->address(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
-            'delivery_time' => Carbon::now(),
+            'delivery_time' => fake()->dateTime(),
 
             'user_id' => User::factory(),
-            'user_id' => User::factory(),
         ];
+    }
+
+    public function configure(): OrderFactory
+    {
+        return $this->afterCreating(function (Order $order) {
+
+            $products = Product::inRandomOrder()->take(6)->get();
+
+            foreach ($products as $product) {
+                $order->product()->attach($product->id, [
+                    'quantity' => rand(1, 5),
+                    'created_at' => now()
+                ]);
+            }
+        });
     }
 }

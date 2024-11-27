@@ -34,11 +34,10 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * @return Collection|Product[]
-     */
+
     public function product(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class);
+        return $this->belongsToMany(Product::class)
+            ->withPivot('quantity');
     }
 }

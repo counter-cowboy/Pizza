@@ -8,7 +8,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class OrderItemFactory extends Factory
+class OrderProductFactory extends Factory
 {
     protected $model = OrderProduct::class;
 
@@ -17,11 +17,10 @@ class OrderItemFactory extends Factory
         return [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'odrer_id' => $this->faker->randomNumber(),
-            'quantity' => $this->faker->randomNumber(),
+
+            'quantity' => $this->faker->numberBetween(1, 7),
 
             'order_id' => Order::factory(),
-            'product_id' => Product::factory(),
             'product_id' => Product::factory(),
         ];
     }

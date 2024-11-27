@@ -10,7 +10,7 @@ class OrderService
     public function store(int $user_id, array $data): array
     {
         $products[] = $data['products'];
-        $total_amount = 0;
+        $total_price = 0;
 
         $orderToCreate = [
             'user_id' => $user_id,
@@ -30,7 +30,7 @@ class OrderService
             $quantity = $product['quantity'];
 
             $some_product = Product::where('id', $prod_id)->first();
-            $total_amount += $some_product->price * $quantity;
+            $total_price += $some_product->price * $quantity;
 
             $order->product()->attach($prod_id, ['quantity' => $quantity]);
 
@@ -43,13 +43,13 @@ class OrderService
                 'category' => $some_product->category->name
             ];
         }
-        $order->total_amount = $total_amount;
+
+        $order->total_amount = $total_price;
         $order->save();
 
-        $orderToCreate[] = $total_amount;
+        $orderToCreate[] = $total_price;
         $orderToCreate[] = $productsToReturn;
 
         return $orderToCreate;
     }
-
 }

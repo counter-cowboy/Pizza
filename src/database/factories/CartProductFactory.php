@@ -8,7 +8,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class CartItemFactory extends Factory
+class CartProductFactory extends Factory
 {
     protected $model = CartProduct::class;
 
@@ -17,10 +17,11 @@ class CartItemFactory extends Factory
         return [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'quantity' => $this->faker->randomNumber(),
+            'quantity' => $this->faker->numberBetween(1, 5),
 
             'cart_id' => Cart::factory(),
             'product_id' => Product::factory(),
         ];
     }
+
 }

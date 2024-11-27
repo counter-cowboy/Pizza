@@ -11,6 +11,10 @@ class Product extends Model
 {
     use HasFactory;
 
+    /**
+     * @var \Illuminate\Support\HigherOrderCollectionProxy|mixed
+     */
+
     protected $table = 'products';
     protected $with = 'category';
     protected $fillable = [
@@ -28,12 +32,13 @@ class Product extends Model
 
     public function cart(): BelongsToMany
     {
-        return $this->belongsToMany(Cart::class);
+        return $this->belongsToMany(Cart::class)->withPivot('created_at');
     }
 
     public function order(): BelongsToMany
     {
-        return $this->belongsToMany(Order::class);
+        return $this->belongsToMany(Order::class)
+            ->withPivot('quantity');
     }
 
     public function scopeWhereCategoryId($query, $catId)

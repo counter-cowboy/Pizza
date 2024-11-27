@@ -23,6 +23,7 @@ Route::post('register', [RegisterController::class, 'register']);
 
 Route::apiResource('products', ProductController::class)
     ->only(['index', 'show']);
+
 Route::post('carts', [CartController::class, 'store']);
 
 
@@ -30,13 +31,13 @@ Route::middleware('auth:api')
     ->group(function () {
         Route::apiResource('products', ProductController::class)
             ->except(['index', 'show']);
-        Route::apiResource('carts', CartController::class)
-        ->except('store');
 
-        Route::apiResources([
-            'orders' => OrderController::class,
-            'categories' => CategoryController::class
-        ]);
+        Route::apiResource('carts', CartController::class)
+            ->except('store');
+        Route::apiResource('orders', OrderController::class)
+            ->except('destroy');
+
+        Route::apiResource('categories' , CategoryController::class);
     });
 
 

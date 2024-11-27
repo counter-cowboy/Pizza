@@ -8,30 +8,50 @@ use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\OrderService;
+use App\Services\OrderValidationCountService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 
 class OrderController extends Controller
 {
-    public function index(): OrderCollection
+    public function index(Request $request): OrderCollection
     {
-        $this->authorize('viewAdmin', Order::class);
+        if ($this->authorize('viewAdmin', Order::class)) {
+            return new OrderCollection(Order::paginate(20));
+        }
+        $user = $request->user();
 
-        return new OrderCollection(Order::paginate(10));
+        return new OrderCollection($user->order);
     }
 
-    public function store(OrderRequest $request, OrderService $service): OrderResource
+    public function store(OrderRequest                $request,
+                          OrderService                $service,
+                          OrderValidationCountService $orderValidation): OrderResource | JsonResponse
     {
         $this->authorize('create', Order::class);
 
         $user_id = $request->user()->id;
+
         $data = $request->validated();
+        $errors = $orderValidation->validateProductCount($data['products']);
 
-        $orderToCreate = $service->store($user_id, $data);
+        $jsonErrors=[];
 
-        return new OrderResource($orderToCreate);
+        if (!empty($errors)) {
+
+            foreach ($errors as $error => $value) {
+                $jsonErrors[] = $value;
+            }
+            return response()->json($jsonErrors, 401);
+
+        }else {
+            $orderToCreate = $service->store($user_id, $data);
+
+            return new OrderResource($orderToCreate);
+        }
     }
 
     public function show(Order $order): OrderResource
@@ -62,7 +82,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order): JsonResponse
     {
-        $this->authorize('create', Order::class);
+        $this->authorize('update', Order::class);
 
         $order->status = 'canceled';
         $order->save();

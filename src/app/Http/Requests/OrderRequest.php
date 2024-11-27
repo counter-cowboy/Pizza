@@ -3,20 +3,20 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Validator;
 
 class OrderRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-//            'user_id' => ['required', 'exists:users'], //нужен ли?
-//            'total_amount' => ['required', 'numeric'], // сумму считаем по итогу
-//            'status' => ['required'],
             'address' => ['required'],
             'phone' => ['required'],
             'email' => ['required', 'email', 'max:254'],
             'delivery_time' => ['required', 'date'],
-            'products'=>'array|required'
+            'products' => ['array', 'required'],
+            'products.*.product_id' => ['required', 'exists:products, id'],
+            'products.*.quantity' => ['required', 'integer', 'min:1']
         ];
     }
 
