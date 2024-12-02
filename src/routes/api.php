@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -26,6 +27,7 @@ Route::apiResource('products', ProductController::class)
 
 Route::post('carts', [CartController::class, 'store']);
 
+Route::get('users', [UserController::class, 'index']);
 
 Route::middleware('auth:api')
     ->group(function () {
