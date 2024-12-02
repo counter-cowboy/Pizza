@@ -18,3 +18,5 @@ seed:
 	docker exec -it php php artisan db:seed
 fresh-seed:
 	docker exec -it php php artisan migrate:fresh --seed
+test:
+	docker exec -it php php artisan test
