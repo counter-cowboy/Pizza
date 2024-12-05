@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-
 use DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -13,15 +12,12 @@ class RegistrationTest extends TestCase
 
     public function testRegistrationSuccess()
     {
-
-        $dbName=DB::connection()->getDatabaseName();
-        dd($dbName);
-
-
-
+//        $dbName=DB::connection()->getDatabaseName();
+//        dd($dbName);
         $response = $this->withHeaders([
             'Accept' => 'application/json'
-        ])->post('/api/register', [
+        ])
+            ->post('/api/register', [
             'name' => fake()->name,
             'email' => fake()->email,
             'password' => fake()->password(6, 10)
@@ -34,13 +30,15 @@ class RegistrationTest extends TestCase
     {
         $response = $this->withHeaders([
             'Accept' => 'application/json'
-        ])->post('/api/register', [
+        ])
+            ->post('/api/register', [
             'name' => '',
             'email' => fake()->email,
             'password' => fake()->password(6, 10)
         ]);
 
         $response->assertStatus(422);
+        $response->assertJsonValidationErrors('name');
     }
 
     public function testRegistrationFailedNoEmail()
@@ -54,6 +52,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+        $response->assertJsonValidationErrors('email');
     }
 
     public function testRegistrationFailedShortPassword()
@@ -67,6 +66,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+        $response->assertJsonValidationErrors('password');
     }
 
     public function testRegistrationFailedNoPassword()
@@ -80,6 +80,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+        $response->assertJsonValidationErrors('password');
     }
     public function testRegistrationFailedIncorrectEmail()
     {
@@ -92,6 +93,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+        $response->assertJsonValidationErrors('email');
     }
 
 

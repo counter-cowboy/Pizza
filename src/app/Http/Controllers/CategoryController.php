@@ -6,6 +6,7 @@ use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {
@@ -43,6 +44,6 @@ class CategoryController extends Controller
     {
         $this->authorize('canDo', $category);
 
-        return response()->json($category->delete());
+        return response()->json($category->delete(), Response::HTTP_OK);
     }
 }

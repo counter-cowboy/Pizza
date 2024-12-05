@@ -9,22 +9,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(User::all(), 201);
+        $this->authorize('view', User::class);
+
+        return response()->json(User::paginate(25));
     }
 
-    public function store(Request $request)
-    {
-    }
 
-    public function show($id)
-    {
-    }
-
-    public function update(Request $request, $id)
-    {
-    }
-
-    public function destroy($id)
-    {
-    }
 }

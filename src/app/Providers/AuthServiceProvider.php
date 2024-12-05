@@ -9,12 +9,14 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\User;
 use App\Policies\CartProductPolicy;
 use App\Policies\CartPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\OrderProductPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -30,7 +32,8 @@ class AuthServiceProvider extends ServiceProvider
         Order::class => OrderPolicy::class,
         OrderProduct::class => OrderProductPolicy::class,
         Cart::class => CartPolicy::class,
-        CartProduct::class => CartProductPolicy::class
+        CartProduct::class => CartProductPolicy::class,
+        User::class => UserPolicy::class
     ];
 
     /**
