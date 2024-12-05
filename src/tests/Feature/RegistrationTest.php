@@ -3,16 +3,22 @@
 namespace Tests\Feature;
 
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
-    use WithFaker, RefreshDatabase;
+    use WithFaker;
 
     public function testRegistrationSuccess()
     {
+
+        $dbName=DB::connection()->getDatabaseName();
+        dd($dbName);
+
+
+
         $response = $this->withHeaders([
             'Accept' => 'application/json'
         ])->post('/api/register', [
@@ -43,8 +49,8 @@ class RegistrationTest extends TestCase
             'Accept' => 'application/json'
         ])->post('/api/register', [
             'name' => fake()->name,
-            'email' => fake()->email,
-            'password' => ''
+            'email' => '',
+            'password' => fake()->password(6, 10)
         ]);
 
         $response->assertStatus(422);
