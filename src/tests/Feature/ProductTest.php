@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-
 class ProductTest extends TestCase
 {
     use WithFaker;
@@ -46,23 +45,9 @@ class ProductTest extends TestCase
         ])
             ->post('api/products', Product::factory()->create()->toArray());
 
-        $response->assertStatus(403);
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function createProduct(): array
-    {
-        return [
-            'name' => fake()->name(),
-            'description' => fake()->text(30),
-            'price' => fake()->randomFloat(2, 5, 255),
-            'image' => fake()->url,
-            'category_id' => fake()->randomElement([1, 2]),
-        ];
-    }
 
-    public function sum(int $a, int $b)
-    {
-        return $a+$b;
-    }
 
 }
