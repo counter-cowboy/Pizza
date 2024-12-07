@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -10,39 +11,18 @@ class UserTest extends TestCase
 {
     public function testUsersIndexSuccessForAdmin()
     {
-        $user = User::create([
-            'name' => 'VasyaAdmin',
-            'email' => fake()->email(),
-            'password' => 123456,
-            'is_admin' => 1
-        ]);
-        $token = JWTAuth::fromUser($user);
 
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-            "Authorization" => 'Bearer' . $token,
+        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
+            ->getJson(route('users.index'));
 
-        ])->get(route('users.index'));
-
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     public function testUsersIndexFailedForNotAdmin()
     {
-        $user = User::create([
-            'name' => 'Vasya',
-            'email' => fake()->email(),
-            'password' => 123456,
-        ]);
+        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create()->toArray()))
+            ->getJson(route('users.index'));
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-            "Authorization" => 'Bearer' . $token,
-
-        ])->get(route('users.index'));
-
-        $response->assertStatus(403);
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 }

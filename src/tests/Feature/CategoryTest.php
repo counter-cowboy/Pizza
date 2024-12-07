@@ -52,8 +52,8 @@ class CategoryTest extends TestCase
     {
         $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
             ->patchJson(route('categories.update', 1), ['name' => '']);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonFragment(['name' => ['The name field is required.']]);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonFragment(['name' => ['The name field is required.']]);
     }
 
     public function testCategoryUpdateSuccessForAdminExpectHttp200()

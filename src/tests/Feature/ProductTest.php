@@ -31,8 +31,8 @@ class ProductTest extends TestCase
     {
         $response = $this->get(route('products.index', ['category' => 3]));
 
-        $response->assertJsonFragment(['category' => ['The selected category is invalid.']]);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonFragment(['category' => ['The selected category is invalid.']])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
     }
 
@@ -68,9 +68,9 @@ class ProductTest extends TestCase
                 'category_id' => 2
             ]));
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonFragment(['name' => ['The name field is required.']]);
-        $response->assertJsonFragment(['price' => ['The price field must be a number.']]);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonFragment(['name' => ['The name field is required.']])
+            ->assertJsonFragment(['price' => ['The price field must be a number.']]);
     }
 
     public function testProductShowSuccessForAll()
