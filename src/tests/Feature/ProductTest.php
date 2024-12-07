@@ -13,53 +13,59 @@ class ProductTest extends TestCase
 {
     use WithFaker;
 
-    public function testProductsIndexSuccessForAll()
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+        $this->admin = User::factory()->create(['is_admin' => true]);
+
+        $this->userToken = JWTAuth::fromUser($this->user);
+        $this->adminToken = JWTAuth::fromUser($this->admin);
+        $this->product = Product::factory()->create();
+    }
+
+    public function testProductsIndexSuccessForAllExpectHttp_200()
     {
         $response = $this->get(route('products.index'));
 
         $response->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductsIndexSuccessSearchProductByCategory()
+    public function testProductsIndexSuccessSearchProductByCategoryExpectHttp_200()
     {
         $response = $this->get(route('products.index', ['category' => 1]));
 
         $response->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductsIndexFailedSearchProductInvalidCategoryHttp422()
+    public function testProductsIndexFailedSearchProductInvalidCategoryExpectHttp_422()
     {
         $response = $this->get(route('products.index', ['category' => 3]));
 
         $response->assertJsonFragment(['category' => ['The selected category is invalid.']])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
     }
 
-    public function testProductStoreSuccessForAdmin()
+    public function testProductStoreSuccessForAdminExpectHttp_201()
     {
-        $token = JWTAuth::fromUser(User::factory()->create(['is_admin' => true]));
-
-        $response = $this->withToken($token)
-            ->postJson(route('products.store', Product::factory()->create()->toArray()));
+        $response = $this->withToken($this->adminToken)
+            ->postJson(route('products.store', $this->product->toArray()));
 
         $response->assertStatus(Response::HTTP_CREATED);
     }
 
-    public function testProductStoreFailedForUser()
+    public function testProductStoreFailedForUserExpectHttp_403()
     {
-        $token = JWTAuth::fromUser(User::factory()->create());
-
-        $response = $this->withToken($token)
-            ->postJson(route('products.store', Product::factory()
-                ->create()->toArray()));
+        $response = $this->withToken($this->userToken)
+            ->postJson(route('products.store', $this->product->toArray()));
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function testProductStoreFailedForAdminEmptyNameAndStringPriceExpectHttp422()
+    public function testProductStoreFailedForAdminEmptyNameAndStringPriceExpectHttp_422()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
+        $response = $this->withToken($this->adminToken)
             ->postJson(route('products.store', [
                 'name' => '',
                 'description' => fake()->text(20),
@@ -73,54 +79,54 @@ class ProductTest extends TestCase
             ->assertJsonFragment(['price' => ['The price field must be a number.']]);
     }
 
-    public function testProductShowSuccessForAll()
+    public function testProductShowSuccessForAllExpectHttp_200()
     {
-        $response = $this->get(route('products.show', 3));
+        $response = $this->get(route('products.show', $this->product->id));
         $response->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductUpdateSuccessForAdmin()
+    public function testProductUpdateSuccessForAdminExpectHttp_200()
     {
-        $user = User::factory()->create(['is_admin' => true]);
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withToken($token)
+        $response = $this->withToken($this->adminToken)
             ->patch(
-                route('products.update', 1),
-                Product::factory()->create()->toArray()
+                route('products.update', $this->product->id),
+                $this->product->toArray()
             );
 
         $response->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductUpdateSuccessForUser()
+    public function testProductUpdateSuccessForUserExpectHttp_403()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create()))
+        $response = $this->withToken($this->userToken)
             ->patchJson(
                 route('products.update', 1),
-                Product::factory()->create()->toArray()
+                $this->product->toArray()
             );
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function testProductDestroySuccessForAdmin()
+    public function testProductDestroySuccessForAdminExpectHttp_200()
     {
-        $product = Product::factory()->create();
-
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
-            ->delete(route('products.destroy', $product->id));
+        $response = $this->withToken($this->adminToken)
+            ->delete(route('products.destroy', $this->product->id));
 
         $response->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductDestroySuccessForUser()
+    public function testProductDestroySuccessForUserExpectHttp_403()
     {
-        $product = Product::factory()->create();
-
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create()))
-            ->delete(route('products.destroy', $product->id));
+        $response = $this->withToken($this->userToken)
+            ->delete(route('products.destroy', $this->product->id));
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->user->delete();
+        $this->admin->delete();
+        parent::tearDown();
     }
 }

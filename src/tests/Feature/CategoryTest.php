@@ -10,6 +10,26 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CategoryTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+        $this->admin = User::factory()->create(['is_admin' => true]);
+
+        $this->userToken = JWTAuth::fromUser($this->user);
+        $this->adminToken = JWTAuth::fromUser($this->admin);
+
+        $this->category = Category::factory()->create()->toArray();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->user->delete();
+        $this->admin->delete();
+        parent::tearDown();
+    }
+
     public function testCategoryIndexSuccessForAllExpectHttp200()
     {
         $response = $this->get(route('categories.index'));
@@ -18,26 +38,30 @@ class CategoryTest extends TestCase
 
     public function testCategoryStoreFailedForAdminWithEmptyCategoryNameExpectHttp422()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
+        $response = $this->withToken($this->adminToken)
             ->postJson(route('categories.store'), ['name' => '']);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonFragment(['name' => ['The name field is required.']]);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonFragment(['name' => ['The name field is required.']]);
     }
 
     public function testCategoryStoreFailedForNonAuthorizedExpectHttp403()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create()))
+        $response = $this->withToken($this->userToken)
             ->postJson(
                 route('categories.store'),
-                Category::factory()->create(['name' => 'drink'])->toArray()
+                $this->category
             );
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     public function testCategoryStoreSuccessForAdminExpectHttp201()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
-            ->postJson(route('categories.store'), Category::create(['name' => 'drink'])->toArray());
+        $response = $this->withToken($this->adminToken)
+            ->postJson(
+                route('categories.store'),
+                $this->category
+            );
 
         $response->assertStatus(Response::HTTP_CREATED);
     }
@@ -50,27 +74,31 @@ class CategoryTest extends TestCase
 
     public function testCategoryUpdateFailedForAdminWithEmptyCategoryNameExpectHttp422()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
-            ->patchJson(route('categories.update', 1), ['name' => '']);
+        $response = $this->withToken($this->adminToken)
+            ->patchJson(
+                route('categories.update', 1),
+                ['name' => '']
+            );
+
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonFragment(['name' => ['The name field is required.']]);
     }
 
     public function testCategoryUpdateSuccessForAdminExpectHttp200()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create(['is_admin' => true])))
+        $response = $this->withToken($this->adminToken)
             ->patchJson(route('categories.update', 5), ['name' => 'pizza']);
+
         $response->assertStatus(Response::HTTP_OK);
     }
 
     public function testCategoryUpdateFailedForNonAuthorizedExpectHttp403()
     {
-        $response = $this->withToken(JWTAuth::fromUser(User::factory()->create()))
+        $response = $this->withToken($this->userToken)
             ->patchJson(
                 route('categories.update', 1),
-                Category::factory()->create(['name' => 'drink'])->toArray()
+                $this->category
             );
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
-
 }
