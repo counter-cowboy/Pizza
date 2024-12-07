@@ -19,19 +19,19 @@ class ProductFactory extends Factory
             'updated_at' => Carbon::now(),
             'name' => $this->faker->name,
             'description' => $this->faker->text,
-            'price' => $this->faker->randomFloat(2,5,255),
+            'price' => $this->faker->randomFloat(2, 5, 255),
             'image' => $this->faker->filePath(),
             'category_id' => Category::all()->random()->id
         ];
     }
     public function configure(): ProductFactory
     {
-     return $this->afterCreating(function (Product $product){
+        return $this->afterCreating(function (Product $product) {
 
-         $carts=Cart::factory(5)->create();
+            $carts = Cart::factory(5)->create();
 
 
-         $product->cart()->attach($carts->pluck('id'), ['created_at'=>now()]);
-     });
+            $product->cart()->attach($carts->pluck('id'), ['created_at' => now()]);
+        });
     }
 }

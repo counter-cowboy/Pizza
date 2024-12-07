@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Validator;
 
 class OrderRequest extends FormRequest
@@ -23,5 +24,16 @@ class OrderRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'Message' => 'Validation error',
+            'data' => [
+                'errors' => $validator->errors()
+            ]
+        ], 422));
+
     }
 }

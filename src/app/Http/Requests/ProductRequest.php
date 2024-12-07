@@ -2,27 +2,20 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ProductRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'description' => ['required'],
+            'name' => ['required', 'string'],
+            'description' => ['required', 'string'],
             'price' => ['required', 'numeric'],
-            'image' => ['required','string'],
+            'image' => ['required', 'string'],
             'category_id' => ['required', 'integer'],
-        ];
-    }
-    public function messages(): array
-    {
-        return [
-            'name.required'=>"Product name required",
-            'description.required'=>'Describe the product',
-            'image.required'=>'Attach picture for the product',
-            'category_id'=>'Can not add product wothout category'
         ];
     }
 
@@ -31,4 +24,13 @@ class ProductRequest extends FormRequest
         return true;
     }
 
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'Message' => 'Validation error',
+            'data' => [
+                'errors' => $validator->errors()
+            ]
+        ], 422));
+    }
 }

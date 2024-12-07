@@ -9,8 +9,9 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if ($request->user()->is_admin)
+        if ($request->user()->is_admin) {
             return $next($request);
+        }
 
         return response()->json(['status' => false, 'message' => 'Forbidden'], 401);
     }

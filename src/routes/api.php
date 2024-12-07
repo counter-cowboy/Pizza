@@ -9,7 +9,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::middleware('api')
     ->prefix('auth')
     ->group(function () {
@@ -24,10 +23,12 @@ Route::post('register', [RegisterController::class, 'register']);
 
 Route::apiResource('products', ProductController::class)
     ->only(['index', 'show']);
+Route::apiResource('categories', CategoryController::class)
+    ->only(['index', 'show']);
 
-Route::post('carts', [CartController::class, 'store']);
+Route::post('carts', [CartController::class, 'store'])->name('cart.store');
 
-Route::get('users', [UserController::class, 'index']);
+Route::get('users', [UserController::class, 'index'])->name('users.index');
 
 Route::middleware('auth:api')
     ->group(function () {
@@ -36,12 +37,10 @@ Route::middleware('auth:api')
 
         Route::apiResource('carts', CartController::class)
             ->except('store');
+
         Route::apiResource('orders', OrderController::class)
             ->except('destroy');
 
-        Route::apiResource('categories' , CategoryController::class);
+        Route::apiResource('categories', CategoryController::class)
+            ->except('index', 'show');
     });
-
-
-
-

@@ -22,7 +22,7 @@ class UserTest extends TestCase
             'Accept' => 'application/json',
             "Authorization" => 'Bearer' . $token,
 
-        ])->get('/api/users');
+        ])->get(route('users.index'));
 
         $response->assertStatus(200);
     }
@@ -41,7 +41,7 @@ class UserTest extends TestCase
             'Accept' => 'application/json',
             "Authorization" => 'Bearer' . $token,
 
-        ])->get('/api/users');
+        ])->get(route('users.index'));
 
         $response->assertStatus(403);
     }

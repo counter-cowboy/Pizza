@@ -32,8 +32,8 @@ class CartController extends Controller
         // For non-authenticated users
         if (!Auth::check()) {
             $this->service->addToCart($request->product_id);
-            return response()->json(['message'=>'Items added']);
-        }else {
+            return response()->json(['message' => 'Items added']);
+        } else {
 
             // For authenticated, next step - check is_authorised
             $this->authorize('create', Cart::class);

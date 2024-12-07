@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CategoryRequest extends FormRequest
 {
@@ -17,10 +19,14 @@ class CategoryRequest extends FormRequest
     {
         return true;
     }
-    public function messages(): array
+    protected function failedValidation(Validator $validator)
     {
-        return [
-           'name.required'=>'Category name is required'
-        ];
+        throw new HttpResponseException(response()->json([
+            'Message' => 'Validation error',
+            'data' => [
+                'errors' => $validator->errors()
+            ]
+        ], 422));
+
     }
 }

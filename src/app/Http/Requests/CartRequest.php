@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use Auth;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class CartRequest extends FormRequest
@@ -25,10 +27,14 @@ class CartRequest extends FormRequest
         return true;
     }
 
-    public function messages(): array
+    protected function failedValidation(Validator $validator)
     {
-        return [
-            'product_id.unique' => 'Already exists in cart'
-        ];
+        throw new HttpResponseException(response()->json([
+            'Message' => 'Validation error',
+            'data' => [
+                'errors' => $validator->errors()
+            ]
+        ], 422));
+
     }
 }

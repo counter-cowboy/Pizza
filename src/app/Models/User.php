@@ -13,7 +13,9 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -57,7 +59,7 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function order():HasMany
+    public function order(): HasMany
     {
         return $this->hasMany(Order::class);
     }

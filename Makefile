@@ -20,3 +20,5 @@ fresh-seed:
 	docker exec -it php php artisan migrate:fresh --seed
 test:
 	docker exec -it php php artisan test
+fix:
+	tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src

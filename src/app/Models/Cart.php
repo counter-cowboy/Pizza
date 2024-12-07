@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Cart extends Model
 {
     use HasFactory;
-    protected $table='carts';
+    protected $table = 'carts';
 
     protected $fillable = [
         'user_id',
     ];
-    protected $with=['product', 'user'];
+    protected $with = ['product', 'user'];
 
     public function user(): BelongsTo
     {

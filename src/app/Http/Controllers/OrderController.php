@@ -27,10 +27,11 @@ class OrderController extends Controller
         return new OrderCollection($user->order);
     }
 
-    public function store(OrderRequest                $request,
-                          OrderService                $service,
-                          OrderValidationCountService $orderValidation): OrderResource | JsonResponse
-    {
+    public function store(
+        OrderRequest                $request,
+        OrderService                $service,
+        OrderValidationCountService $orderValidation
+    ): OrderResource | JsonResponse {
         $this->authorize('create', Order::class);
 
         $user_id = $request->user()->id;
@@ -38,7 +39,7 @@ class OrderController extends Controller
         $data = $request->validated();
         $errors = $orderValidation->validateProductCount($data['products']);
 
-        $jsonErrors=[];
+        $jsonErrors = [];
 
         if (!empty($errors)) {
 
@@ -47,7 +48,7 @@ class OrderController extends Controller
             }
             return response()->json($jsonErrors, 401);
 
-        }else {
+        } else {
             $orderToCreate = $service->store($user_id, $data);
 
             return new OrderResource($orderToCreate);

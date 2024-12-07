@@ -12,9 +12,9 @@ class OrderCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'meta'=>[
-                'current_page'=>$this->currentPage(),
-                'last_page'=>$this->lastPage(),
+            'meta' => [
+                'current_page' => $this->currentPage(),
+                'last_page' => $this->lastPage(),
                 'per_page' => $this->perPage(),
                 'total' => $this->total(),
             ]

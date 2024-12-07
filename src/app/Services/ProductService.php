@@ -20,7 +20,5 @@ class ProductService
         }
 
         return $query->paginate(10);
-
     }
-
 }
