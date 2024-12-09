@@ -57,19 +57,15 @@ class CategoryTest extends TestCase
 
     public function testCategoryStoreSuccessForAdminExpectHttp201()
     {
-        $response = $this->withToken($this->adminToken)
-            ->postJson(
-                route('categories.store'),
-                $this->category
-            );
-
-        $response->assertStatus(Response::HTTP_CREATED);
+        $this->withToken($this->adminToken)
+            ->postJson(route('categories.store'), $this->category)
+            ->assertStatus(Response::HTTP_CREATED);
     }
 
     public function testCategoryShowSuccessForAllExpectHttp200()
     {
-        $response = $this->get('/api/categories/1');
-        $response->assertStatus(Response::HTTP_OK);
+        $this->get('/api/categories/1')
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testCategoryUpdateFailedForAdminWithEmptyCategoryNameExpectHttp422()
@@ -86,19 +82,18 @@ class CategoryTest extends TestCase
 
     public function testCategoryUpdateSuccessForAdminExpectHttp200()
     {
-        $response = $this->withToken($this->adminToken)
-            ->patchJson(route('categories.update', 5), ['name' => 'pizza']);
-
-        $response->assertStatus(Response::HTTP_OK);
+        $this->withToken($this->adminToken)
+            ->patchJson(route('categories.update', 5), ['name' => 'pizza'])
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testCategoryUpdateFailedForNonAuthorizedExpectHttp403()
     {
-        $response = $this->withToken($this->userToken)
+        $this->withToken($this->userToken)
             ->patchJson(
                 route('categories.update', 1),
                 $this->category
-            );
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+            )
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 }

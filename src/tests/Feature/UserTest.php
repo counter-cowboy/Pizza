@@ -16,8 +16,8 @@ class UserTest extends TestCase
         $this->user = User::factory()->create();
         $this->adminToken = JWTAuth::fromUser($this->admin);
         $this->userToken = JWTAuth::fromUser($this->user);
-
     }
+
     protected function tearDown(): void
     {
         $this->user->delete();
@@ -27,17 +27,15 @@ class UserTest extends TestCase
 
     public function testUsersIndexSuccessForAdmin()
     {
-        $response = $this->withToken($this->adminToken)
-            ->getJson(route('users.index'));
-
-        $response->assertStatus(Response::HTTP_OK);
+        $this->withToken($this->adminToken)
+            ->getJson(route('users.index'))
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testUsersIndexFailedForNotAdmin()
     {
-        $response = $this->withToken($this->userToken)
-            ->getJson(route('users.index'));
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->withToken($this->userToken)
+            ->getJson(route('users.index'))
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 }

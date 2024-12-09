@@ -13,7 +13,7 @@ class RegistrationTest extends TestCase
 
     public function testRegistrationSuccess()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => fake()->name,
             'email' => fake()->email,
             'password' => fake()->password(6, 10)
@@ -24,54 +24,51 @@ class RegistrationTest extends TestCase
 
     public function testRegistrationFailedNoName()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => '',
             'email' => fake()->email,
             'password' => fake()->password(6, 10)
         ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors('name');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors('name');
     }
 
     public function testRegistrationFailedNoEmail()
     {
-        $response = $this->withHeaders([
-            'Accept' => 'application/json'
-        ])->post('/api/register', [
-            'name' => fake()->name,
-            'email' => '',
-            'password' => fake()->password(6, 10)
-        ]);
+        $response = $this
+            ->postJson(route('register'), [
+                'name' => fake()->name,
+                'email' => '',
+                'password' => fake()->password(6, 10)
+            ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors('email');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors('email');
     }
 
     public function testRegistrationFailedShortPassword()
     {
-        $response = $this->withHeaders([
-            'Accept' => 'application/json'
-        ])->post('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => fake()->name,
             'email' => fake()->email,
             'password' => fake()->password(3, 5)
         ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors('password');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors('password');
     }
 
     public function testRegistrationFailedNoPassword()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => fake()->name,
             'email' => fake()->email,
             'password' => ''
         ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors('password');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors('password');
     }
 
     public function testRegistrationFailedIncorrectEmail()
@@ -82,9 +79,7 @@ class RegistrationTest extends TestCase
             'password' => fake()->password(6, 10)
         ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors('email');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors('email');
     }
-
-
 }

@@ -6,32 +6,32 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Resources\Collections\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\Product;
 use App\Services\OrderService;
 use App\Services\OrderValidationCountService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
     public function index(Request $request): OrderCollection
     {
-        if ($this->authorize('viewAdmin', Order::class)) {
+        if (Auth::user()->is_admin===1) {
             return new OrderCollection(Order::paginate(20));
-        }
-        $user = $request->user();
+        } else {
+            $user = $request->user();
 
-        return new OrderCollection($user->order);
+            return new OrderCollection($user->order);
+        }
     }
 
     public function store(
         OrderRequest                $request,
         OrderService                $service,
         OrderValidationCountService $orderValidation
-    ): OrderResource | JsonResponse {
+    ): OrderResource|JsonResponse
+    {
         $this->authorize('create', Order::class);
 
         $user_id = $request->user()->id;
@@ -46,12 +46,13 @@ class OrderController extends Controller
             foreach ($errors as $error => $value) {
                 $jsonErrors[] = $value;
             }
-            return response()->json($jsonErrors, 401);
+            return response()->json($jsonErrors, Response::HTTP_UNPROCESSABLE_ENTITY);
 
         } else {
-            $orderToCreate = $service->store($user_id, $data);
+            $order = $service->store($user_id, $data);
 
-            return new OrderResource($orderToCreate);
+
+            return new OrderResource($order);
         }
     }
 
@@ -72,14 +73,6 @@ class OrderController extends Controller
         return new OrderResource($order);
     }
 
-    public function destroy(Order $order): JsonResponse
-    {
-        $this->authorize('delete', $order);
-
-        $order->delete();
-
-        return response()->json();
-    }
 
     public function cancel(Order $order): JsonResponse
     {

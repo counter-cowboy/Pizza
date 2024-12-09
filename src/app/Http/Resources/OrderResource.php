@@ -10,10 +10,10 @@ class OrderResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        if (is_array($this->resource)) {
+
             return [
-                'created_at' => $this->created_at,
-                'updated_at' => $this->updated_at,
+//                'created_at' => $this->created_at,
+//                'updated_at' => $this->updated_at,
                 'id' => $this->id,
                 'total_amount' => $this->total_amount,
                 'status' => $this->status,
@@ -24,7 +24,7 @@ class OrderResource extends JsonResource
 
                 'user_id' => $this->user_id,
             ];
-        }
+
 
     }
 }

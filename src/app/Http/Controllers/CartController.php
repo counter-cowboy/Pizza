@@ -14,11 +14,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends Controller
 {
-//    private CartService $service;
+    //    private CartService $service;
 
     public function __construct(protected CartService $service)
     {
-//        $this->service = $service;
+        //        $this->service = $service;
     }
 
     public function index()

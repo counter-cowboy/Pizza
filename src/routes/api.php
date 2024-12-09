@@ -35,6 +35,9 @@ Route::middleware('auth:api')
         Route::apiResource('products', ProductController::class)
             ->except(['index', 'show']);
 
+        Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
+            ->name('order.cancel');
+
         Route::apiResource('carts', CartController::class)
             ->except('store');
 

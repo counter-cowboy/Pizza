@@ -7,9 +7,10 @@ use App\Models\Product;
 
 class OrderService
 {
-    public function store(int $user_id, array $data): array
+    public array $arrayForResponse;
+    public function store(int $user_id, array $data): Order
     {
-        $products[] = $data['products'];
+        $products = $data['products'];
         $total_price = 0;
 
         $orderToCreate = [
@@ -26,8 +27,9 @@ class OrderService
         $productsToReturn = [];
 
         foreach ($products as $product) {
-            $prod_id = $product['product_id'];
             $quantity = $product['quantity'];
+            $prod_id = $product['product_id'];
+
 
             $some_product = Product::where('id', $prod_id)->first();
             $total_price += $some_product->price * $quantity;
@@ -50,6 +52,17 @@ class OrderService
         $orderToCreate[] = $total_price;
         $orderToCreate[] = $productsToReturn;
 
-        return $orderToCreate;
+        $this->set($orderToCreate);
+        return $order;
+    }
+
+    public function set(array $data): void
+    {
+        $this->arrayForResponse=$data;
+    }
+
+    public function get(): array
+    {
+        return $this->arrayForResponse;
     }
 }

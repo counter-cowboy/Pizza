@@ -27,40 +27,35 @@ class ProductTest extends TestCase
 
     public function testProductsIndexSuccessForAllExpectHttp_200()
     {
-        $response = $this->get(route('products.index'));
-
-        $response->assertStatus(Response::HTTP_OK);
+        $this->getJson(route('products.index'))
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testProductsIndexSuccessSearchProductByCategoryExpectHttp_200()
     {
-        $response = $this->get(route('products.index', ['category' => 1]));
-
-        $response->assertStatus(Response::HTTP_OK);
+        $this->getJson(route('products.index', ['category' => 1]))
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testProductsIndexFailedSearchProductInvalidCategoryExpectHttp_422()
     {
-        $response = $this->get(route('products.index', ['category' => 3333]));
-
-        $response->assertJsonFragment(['category' => ['The selected category is invalid.']])
+        $this->getJson(route('products.index', ['category' => 3333]))
+            ->assertJsonFragment(['category' => ['The selected category is invalid.']])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testProductStoreSuccessForAdminExpectHttp_201()
     {
-        $response = $this->withToken($this->adminToken)
-            ->postJson(route('products.store', $this->product->toArray()));
-
-        $response->assertStatus(Response::HTTP_CREATED);
+        $this->withToken($this->adminToken)
+            ->postJson(route('products.store', $this->product->toArray()))
+            ->assertStatus(Response::HTTP_CREATED);
     }
 
     public function testProductStoreFailedForUserExpectHttp_403()
     {
-        $response = $this->withToken($this->userToken)
-            ->postJson(route('products.store', $this->product->toArray()));
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->withToken($this->userToken)
+            ->postJson(route('products.store', $this->product->toArray()))
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     public function testProductStoreFailedForAdminEmptyNameAndStringPriceExpectHttp_422()
@@ -81,46 +76,36 @@ class ProductTest extends TestCase
 
     public function testProductShowSuccessForAllExpectHttp_200()
     {
-        $response = $this->get(route('products.show', $this->product->id));
-        $response->assertStatus(Response::HTTP_OK);
+        $this->get(route('products.show', $this->product->id))
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testProductUpdateSuccessForAdminExpectHttp_200()
     {
-        $response = $this->withToken($this->adminToken)
-            ->patch(
-                route('products.update', $this->product->id),
-                $this->product->toArray()
-            );
-
-        $response->assertStatus(Response::HTTP_OK);
+        $this->withToken($this->adminToken)
+            ->patch(route('products.update', $this->product->id), $this->product->toArray())
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testProductUpdateSuccessForUserExpectHttp_403()
     {
-        $response = $this->withToken($this->userToken)
-            ->patchJson(
-                route('products.update', 1),
-                $this->product->toArray()
-            );
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->withToken($this->userToken)
+            ->patchJson(route('products.update', 1), $this->product->toArray())
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     public function testProductDestroySuccessForAdminExpectHttp_200()
     {
-        $response = $this->withToken($this->adminToken)
-            ->delete(route('products.destroy', $this->product->id));
-
-        $response->assertStatus(Response::HTTP_OK);
+        $this->withToken($this->adminToken)
+            ->delete(route('products.destroy', $this->product->id))
+            ->assertStatus(Response::HTTP_OK);
     }
 
     public function testProductDestroySuccessForUserExpectHttp_403()
     {
-        $response = $this->withToken($this->userToken)
-            ->delete(route('products.destroy', $this->product->id));
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->withToken($this->userToken)
+            ->delete(route('products.destroy', $this->product->id))
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     protected function tearDown(): void
