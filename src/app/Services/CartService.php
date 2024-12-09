@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Symfony\Component\HttpFoundation\Response;
 
 class CartService
 {
@@ -15,11 +16,11 @@ class CartService
         $cart = Session::get('cart', []);
 
         if (isset($cart[$productId])) {
-            return response()->json('Already in cart', 409);
+            return response()->json('Already in cart', Response::HTTP_CONFLICT);
         } else {
             $cart[] = $productId;
             Session::put('cart', $cart);
-            return response()->json(['Added to cart', 'cart' => $cart], 201);
+            return response()->json(['Added to cart', 'cart' => $cart], Response::HTTP_OK);
         }
     }
 
@@ -27,11 +28,13 @@ class CartService
     public function viewCart(): JsonResponse
     {
         $userCart = null;
-        $cart = Session::get('cart', []);
+
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->get();
+            return response()->json($userCart, Response::HTTP_OK);
         }
-        return response()->json($userCart, 201);
+
+        return Session::get('cart', []);
     }
 
     public static function createCartForAuth($cart, $userId): JsonResponse
@@ -43,9 +46,9 @@ class CartService
                 $newCart->product()->attach($productId);
             }
             Session::forget('cart');
-            return response()->json($newCart, 201);
+            return response()->json($newCart, Response::HTTP_CREATED);
         } else {
-            return response()->json(Cart::create(['user_id' => $userId]), 201);
+            return response()->json(Cart::create(['user_id' => $userId]), Response::HTTP_CREATED);
         }
     }
 

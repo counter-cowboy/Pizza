@@ -12,13 +12,16 @@ class CartRequest extends FormRequest
 {
     public function rules(): array
     {
-
         return [
             'product_id' => ['required',
-                Rule::unique('cart_product')
-                    ->where(function ($query) {
-                        return $query->where('cart_id', Auth::user()->cart->id);
-                    })]
+//                Rule::unique('cart_product')
+//                    ->where(function ($query) {
+//
+//                        $user = auth()->user();
+//
+//                        return $query->where('cart_id', $user->cart->id);
+//                    })
+            ]
         ];
     }
 

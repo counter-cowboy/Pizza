@@ -10,14 +10,15 @@ use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends Controller
 {
-    private $service;
+//    private CartService $service;
 
-    public function __construct(CartService $service)
+    public function __construct(protected CartService $service)
     {
-        $this->service = $service;
+//        $this->service = $service;
     }
 
     public function index()
@@ -32,7 +33,7 @@ class CartController extends Controller
         // For non-authenticated users
         if (!Auth::check()) {
             $this->service->addToCart($request->product_id);
-            return response()->json(['message' => 'Items added']);
+            return response()->json(['message' => 'Items added'], Response::HTTP_CREATED);
         } else {
 
             // For authenticated, next step - check is_authorised
@@ -62,15 +63,4 @@ class CartController extends Controller
 
         return new CartResource($cart);
     }
-
-    public function destroy(Cart $cart)
-    {
-        $this->authorize('delete', $cart);
-
-        $cart->delete();
-
-        return response()->json();
-    }
-
-
 }

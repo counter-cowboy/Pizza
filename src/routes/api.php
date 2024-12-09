@@ -12,21 +12,21 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('api')
     ->prefix('auth')
     ->group(function () {
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
-        Route::post('me', [AuthController::class, 'me']);
+        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
+        Route::post('me', [AuthController::class, 'me'])->name('me');
     });
 
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
-Route::post('register', [RegisterController::class, 'register']);
+Route::post('register', [RegisterController::class, 'register'])->name('register');
 
 Route::apiResource('products', ProductController::class)
     ->only(['index', 'show']);
 Route::apiResource('categories', CategoryController::class)
     ->only(['index', 'show']);
 
-Route::post('carts', [CartController::class, 'store'])->name('cart.store');
+Route::post('carts', [CartController::class, 'store'])->name('carts.store');
 
 Route::get('users', [UserController::class, 'index'])->name('users.index');
 

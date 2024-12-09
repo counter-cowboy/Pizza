@@ -30,7 +30,6 @@ class ProductFactory extends Factory
 
             $carts = Cart::factory(5)->create();
 
-
             $product->cart()->attach($carts->pluck('id'), ['created_at' => now()]);
         });
     }

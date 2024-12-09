@@ -41,7 +41,7 @@ class ProductTest extends TestCase
 
     public function testProductsIndexFailedSearchProductInvalidCategoryExpectHttp_422()
     {
-        $response = $this->get(route('products.index', ['category' => 3]));
+        $response = $this->get(route('products.index', ['category' => 3333]));
 
         $response->assertJsonFragment(['category' => ['The selected category is invalid.']])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
