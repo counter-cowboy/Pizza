@@ -5,6 +5,7 @@ chmod:
 build:
 	docker compose build
 up:
+	chmod 644 ./docker/volume/init.sql
 	docker compose up -d
 down:
 	docker compose down
