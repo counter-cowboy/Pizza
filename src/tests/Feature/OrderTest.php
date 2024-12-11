@@ -24,8 +24,6 @@ class OrderTest extends TestCase
         $this->adminToken = JWTAuth::fromUser($this->admin);
 
         $this->order = [
-//            'created_at' => Carbon::now(),
-//            'updated_at' => Carbon::now(),
             'total_amount' => $this->faker->randomFloat(2, 1, 200),
             'status' => $this->faker->randomElement(['in_progress', 'delivering',]),
             'address' => $this->faker->address(),
@@ -73,10 +71,54 @@ class OrderTest extends TestCase
 
     public function testOrderStoreForUserSuccessExpectHttp_201()
     {
-        $response = $this->withToken($this->userToken)
-            ->postJson(route('orders.store', $this->order));
+        $this->withToken($this->userToken)
+            ->postJson(route('orders.store', $this->order))
+            ->assertStatus(Response::HTTP_CREATED);
+    }
 
-        $response->assertStatus(Response::HTTP_CREATED);
+    public function testOrderStoreForUnauthorizedFailExpectHttp401()
+    {
+        $this->postJson(route('orders.store'), $this->order)
+            ->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testOrderShowForUserSuccessExpectHttp200()
+    {
+        $order = $this->user->order()->create($this->order);
+
+        $this->withToken($this->userToken)
+            ->getJson(route('orders.show', $order->id))
+            ->assertStatus(Response::HTTP_OK);
+    }
+
+    public function testOrderUpdateForUserSuccessExpectHttp_200()
+    {
+        $order = $this->user->order()->create($this->order);
+
+        $this->withToken(JWTAuth::fromUser($this->user))
+            ->patchJson(route('orders.update', $order->id),[
+                    'products' => [
+                        [
+                            'product_id' => 2,
+                            'quantity' => 4
+                        ],
+                        [
+                            'product_id' => 5,
+                            'quantity' => 2
+                        ]
+                    ],
+                ]
+              )
+            ->assertStatus(Response::HTTP_OK);
+    }
+
+    public function testOrderCancelFofUserSuccessExpectHttp200()
+    {
+        $order = $this->user->order()->create($this->order);
+
+        $this->withToken($this->userToken)
+            ->postJson(route('orders.cancel', $order->id))
+            ->assertStatus(Response::HTTP_OK);
     }
 
 

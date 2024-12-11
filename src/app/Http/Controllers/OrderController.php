@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\OrderUpdateRequest;
 use App\Http\Resources\Collections\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -17,7 +18,7 @@ class OrderController extends Controller
 {
     public function index(Request $request): OrderCollection
     {
-        if (Auth::user()->is_admin===1) {
+        if (Auth::user()->is_admin === 1) {
             return new OrderCollection(Order::paginate(20));
         } else {
             $user = $request->user();
@@ -30,8 +31,7 @@ class OrderController extends Controller
         OrderRequest                $request,
         OrderService                $service,
         OrderValidationCountService $orderValidation
-    ): OrderResource|JsonResponse
-    {
+    ): OrderResource|JsonResponse {
         $this->authorize('create', Order::class);
 
         $user_id = $request->user()->id;
@@ -51,7 +51,6 @@ class OrderController extends Controller
         } else {
             $order = $service->store($user_id, $data);
 
-
             return new OrderResource($order);
         }
     }
@@ -64,7 +63,7 @@ class OrderController extends Controller
     }
 
 
-    public function update(OrderRequest $request, Order $order): OrderResource
+    public function update(OrderUpdateRequest $request, Order $order): OrderResource
     {
         $this->authorize('update', $order);
 
@@ -76,7 +75,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order): JsonResponse
     {
-        $this->authorize('update', Order::class);
+        $this->authorize('update', $order);
 
         $order->status = 'canceled';
         $order->save();

@@ -18,11 +18,11 @@ class OrderFactory extends Factory
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'total_amount' => $this->faker->randomFloat(2, 1, 200),
-            'status' => $this->faker->randomElement(['in_progress', 'delivering', 'delivered', 'canceled']),
+            'status' => $this->faker->randomElement(['in_progress', 'delivering']),
             'address' => $this->faker->address(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
-            'delivery_time' => fake()->dateTime(),
+            'delivery_time' => Carbon::now()->addHours(2)->addMinutes(35)->toDateTimeString(),
 
             'user_id' => User::factory(),
         ];

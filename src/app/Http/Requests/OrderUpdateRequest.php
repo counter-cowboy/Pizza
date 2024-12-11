@@ -2,23 +2,26 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Contracts\Validation\Validator;
 
-class OrderRequest extends FormRequest
+class OrderUpdateRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'address' => ['required'],
-            'phone' => ['required'],
-            'email' => ['required', 'email', 'max:254'],
-            'delivery_time' => ['required', 'date'],
-            'products' => ['array', 'required'],
-            'products.*.product_id' => ['required', 'exists:products,id'],
-            'products.*.quantity' => ['required', 'integer', 'min:1']
+            'user_id' => ['sometimes','exists:users'],
+            'total_amount' => ['sometimes', 'numeric'],
+            'status' => ['sometimes'],
+            'address' => ['sometimes'],
+            'phone' => ['sometimes'],
+            'email' => ['sometimes', 'email', 'max:254'],
+            'delivery_time' => ['sometimes', 'date'],
+            'products' => ['array', 'sometimes'],
+            'products.*.product_id' => ['sometimes', 'exists:products,id'],
+            'products.*.quantity' => ['sometimes', 'integer', 'min:1']
         ];
     }
 

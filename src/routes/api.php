@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -16,6 +17,11 @@ Route::middleware('api')
         Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
         Route::post('me', [AuthController::class, 'me'])->name('me');
     });
+
+Route::get('/', [HomeController::class, 'index']);
+
+Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])
+    ->middleware('auth:api')->name('orders.cancel');
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 

@@ -15,6 +15,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 #RUN composer install
 
 #RUN pecl install redis && docker-php-ext-enable redis
+
 #WORKDIR /var/www/html
 #RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 

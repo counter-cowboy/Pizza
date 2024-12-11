@@ -58,7 +58,7 @@ class OrderService
 
     public function set(array $data): void
     {
-        $this->arrayForResponse=$data;
+        $this->arrayForResponse = $data;
     }
 
     public function get(): array

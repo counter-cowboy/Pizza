@@ -58,12 +58,11 @@ class CartTest extends TestCase
 
     public function testCartShowForUserSuccessExpect_200()
     {
-        $user = User::factory()->create();
-        $userToken = JWTAuth::fromUser($user);
-        $this->withToken($userToken)
+        // Create cart with binding to user
+        $this->withToken($this->userToken)
             ->postJson(route('carts.store', ['product_id' => 3]));
 
-        $this->withToken($userToken)
+        $this->withToken($this->userToken)
             ->getJson(route('carts.show', Auth::user()->cart->id))
             ->assertStatus(Response::HTTP_OK);
     }
