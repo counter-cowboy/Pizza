@@ -1,17 +1,6 @@
 version: '3'
 
 services:
-  php:
-    container_name: php
-    build:
-      dockerfile: docker/php/Dockerfile
-    volumes:
-      - './src:/var/www/html'
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-    depends_on:
-      - mysql
 
   nginx:
     container_name: nginx
@@ -51,7 +40,7 @@ services:
 
 
   phpmyadmin:
-    container_name: phpadmin
+    container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin
     ports:
       - "9090:80"
@@ -61,6 +50,23 @@ services:
     depends_on:
       - mysql
 
+  php:
+    container_name: php
+    build:
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - './src:/var/www/html'
+    environment:
+      - DB_CONNECTION=mysql
+#    command: >
+#      sh -c "
+#        php artisan migrate --database=pizza &&
+#        php artisan db:seed --database=pizza &&
+#        php artisan migrate --database=pizza_test &&
+#        php artisan db:seed --database=pizza_test
+#      "
+    depends_on:
+      - phpmyadmin
 #  redis:
 #    container_name: redis
 #    image: redis:alpine
