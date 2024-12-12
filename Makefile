@@ -2,6 +2,8 @@
 
 chmod:
 	chmod 644 ./docker/volume/init.sql
+env:
+	mv /src/.env.example /src/.env
 build:
 	docker compose build
 up:
