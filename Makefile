@@ -26,21 +26,18 @@ test:
 fix:
 	tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src
 
-# Makefile для миграции и сидирования баз данных
-
-# Переменные для команд
+# для миграции и сидирования баз данных
 PHP=php
 ARTISAN=php artisan
 
-# Основная база данных
+# Основная БД
 MIGRATE_MAIN=$(ARTISAN) migrate --database=mysql
 SEED_MAIN=$(ARTISAN) db:seed --database=mysql
 
-# Тестовая база данных
+# Тестовая БД
 MIGRATE_TEST=$(ARTISAN) migrate --database=mysql_test
 SEED_TEST=$(ARTISAN) db:seed --database=mysql_test
 
-# Правило для миграции и сидирования для обеих баз данных
 db:
 	@echo "Running migrations and seed for main database..."
 	docker exec -it php $(MIGRATE_MAIN)
