@@ -6,7 +6,7 @@ Start application:
 #### make up
 (or  
 chmod 644 ./docker/volume/init.sql  
-mv .env.example .env  
+mv /src/.env.example /src/.env  
 docker compose up -d  
 )
 
