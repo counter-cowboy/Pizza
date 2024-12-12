@@ -26,18 +26,6 @@ services:
       - './docker/volume/mysql:/var/lib/mysql'
       - './docker/volume/init.sql:/docker-entrypoint-initdb.d/init.sql'
 
-#  pgsql:
-#    image: postgres:latest
-#    container_name: pgsql
-#    environment:
-#        POSTGRES_USER: test_user
-#        POSTGRES_PASSWORD: test_password
-#        POSTGRES_DB: test_database
-#    ports:
-#        - "5433:5432"
-#    volumes:
-#        - ./docker/volume/test_db_data:/var/lib/postgresql/data
-
 
   phpmyadmin:
     container_name: phpmyadmin
