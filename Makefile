@@ -6,6 +6,7 @@ build:
 	docker compose build
 up:
 	chmod 644 ./docker/volume/init.sql
+	mv .env.example .env
 	docker compose up -d
 down:
 	docker compose down
