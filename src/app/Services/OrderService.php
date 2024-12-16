@@ -7,7 +7,8 @@ use App\Models\Product;
 
 class OrderService
 {
-    public array $arrayForResponse;
+    public array $arrayForResponse =[];
+
     public function store(int $user_id, array $data): Order
     {
         $products = $data['products'];

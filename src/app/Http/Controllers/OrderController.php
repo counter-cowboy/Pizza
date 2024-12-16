@@ -18,7 +18,7 @@ class OrderController extends Controller
 {
     public function index(Request $request): OrderCollection
     {
-        if (Auth::user()->is_admin === 1) {
+        if (Auth::user()->is_admin == 1) {
             return new OrderCollection(Order::paginate(20));
         } else {
             $user = $request->user();

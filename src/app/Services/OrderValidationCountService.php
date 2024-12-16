@@ -17,14 +17,13 @@ class OrderValidationCountService
 
             $productData = Product::findOrFail($productId);
 
-            if ($productData) {
-                if ($productData->category->name == 'pizza') {
-                    $pizzas += $quantity;
+            if ($productData->category->name == 'pizza') {
+                $pizzas += $quantity;
 
-                } elseif ($productData->category->name == 'drink') {
-                    $drinks += $quantity;
-                }
+            } elseif ($productData->category->name == 'drink') {
+                $drinks += $quantity;
             }
+
             if ($pizzas > 20) {
                 $errorArr[] = ['pizzas' => 'You can order no more than 10 pizzas'];
             }

@@ -14,11 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends Controller
 {
-    //    private CartService $service;
 
     public function __construct(protected CartService $service)
     {
-        //        $this->service = $service;
     }
 
     public function index()
@@ -33,9 +31,9 @@ class CartController extends Controller
         // For non-authenticated users
         if (!Auth::check()) {
             $this->service->addToCart($request->product_id);
+
             return response()->json(['message' => 'Items added'], Response::HTTP_CREATED);
         } else {
-
             // For authenticated, next step - check is_authorised
             $this->authorize('create', Cart::class);
             $data = $request->validated();

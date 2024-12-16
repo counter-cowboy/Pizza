@@ -30,9 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         Product::class => ProductPolicy::class,
         Category::class => CategoryPolicy::class,
         Order::class => OrderPolicy::class,
-        OrderProduct::class => OrderProductPolicy::class,
         Cart::class => CartPolicy::class,
-        CartProduct::class => CartProductPolicy::class,
         User::class => UserPolicy::class
     ];
 

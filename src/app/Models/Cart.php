@@ -17,11 +17,17 @@ class Cart extends Model
     ];
     protected $with = ['product', 'user'];
 
+    /**
+     * @return BelongsTo<User, Cart>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsToMany<Product>
+     */
     public function product(): BelongsToMany
     {
         return $this->belongsToMany(Product::class);

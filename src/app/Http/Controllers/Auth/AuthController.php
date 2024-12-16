@@ -27,11 +27,11 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = Auth::attempt($credentials)) {
+        if (!$token = Auth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        return $this->respondWithToken($token);
+        return $this->respondWithToken(Auth::user()
+            ->createToken('Pizza')->plainTextToken);
     }
 
     /**

@@ -11,7 +11,7 @@ use LaravelIdea\Helper\App\Models\_IH_Product_QB;
 
 class ProductService
 {
-    public function search(ProductSearchRequest $request): array|LengthAwarePaginator|\Illuminate\Pagination\LengthAwarePaginator|_IH_Product_C
+    public function search(ProductSearchRequest $request): array|LengthAwarePaginator
     {
         $query = Product::query();
 

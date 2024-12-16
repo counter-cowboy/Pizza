@@ -29,6 +29,9 @@ class Order extends Model
         'delivery_time' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<User, Order>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

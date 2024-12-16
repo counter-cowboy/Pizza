@@ -96,7 +96,9 @@ class OrderTest extends TestCase
         $order = $this->user->order()->create($this->order);
 
         $this->withToken(JWTAuth::fromUser($this->user))
-            ->patchJson(route('orders.update', $order->id),[
+            ->patchJson(
+                route('orders.update', $order->id),
+                [
                     'products' => [
                         [
                             'product_id' => 2,
@@ -108,7 +110,7 @@ class OrderTest extends TestCase
                         ]
                     ],
                 ]
-              )
+            )
             ->assertStatus(Response::HTTP_OK);
     }
 
