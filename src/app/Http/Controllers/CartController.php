@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends Controller
 {
-
     public function __construct(protected CartService $service)
     {
     }
