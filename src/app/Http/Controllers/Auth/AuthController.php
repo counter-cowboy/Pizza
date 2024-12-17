@@ -27,8 +27,8 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 422);
         }
         return $this->respondWithToken(Auth::user()
             ->createToken('Pizza')->plainTextToken);

@@ -12,6 +12,12 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class ProductTest extends TestCase
 {
     use WithFaker;
+    private User $admin;
+    private User $user;
+    private Product $product;
+    private string $userToken;
+    private string $adminToken;
+
 
     protected function setUp(): void
     {
@@ -25,26 +31,26 @@ class ProductTest extends TestCase
         $this->product = Product::factory()->create();
     }
 
-    public function testProductsIndexSuccessForAllExpectHttp_200()
+    public function testProductsIndexSuccessForAllExpectHttpOk()
     {
         $this->getJson(route('products.index'))
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductsIndexSuccessSearchProductByCategoryExpectHttp_200()
+    public function testProductsIndexSuccessSearchProductByCategoryExpectHttpOk()
     {
         $this->getJson(route('products.index', ['category' => 1]))
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductsIndexFailedSearchProductInvalidCategoryExpectHttp_422()
+    public function testProductsIndexFailedSearchProductInvalidCategoryExpectHttpUnprocessableEntity()
     {
         $this->getJson(route('products.index', ['category' => 3333]))
             ->assertJsonFragment(['category' => ['The selected category is invalid.']])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function testProductStoreSuccessForAdminExpectHttp_201()
+    public function testProductStoreSuccessForAdminExpectHttpCreated()
     {
         $this->withToken($this->adminToken)
             ->postJson(route('products.store', $this->product->toArray()))
@@ -58,7 +64,7 @@ class ProductTest extends TestCase
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function testProductStoreFailedForAdminEmptyNameAndStringPriceExpectHttp_422()
+    public function testProductStoreFailedForAdminEmptyNameAndStringPriceExpectHttpUnprocessableEntity()
     {
         $response = $this->withToken($this->adminToken)
             ->postJson(route('products.store', [
@@ -74,34 +80,40 @@ class ProductTest extends TestCase
             ->assertJsonFragment(['price' => ['The price field must be a number.']]);
     }
 
-    public function testProductShowSuccessForAllExpectHttp_200()
+    public function testProductShowSuccessForAllExpectHttpOk()
     {
         $this->get(route('products.show', $this->product->id))
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductUpdateSuccessForAdminExpectHttp_200()
+    public function testProductShowFailForAllExpectHttpNotFound()
+    {
+        $this->get(route('products.show', 20000))
+            ->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testProductUpdateSuccessForAdminExpectHttpOk()
     {
         $this->withToken($this->adminToken)
             ->patch(route('products.update', $this->product->id), $this->product->toArray())
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductUpdateSuccessForUserExpectHttp_403()
+    public function testProductUpdateSuccessForUserExpectHttpForbidden()
     {
         $this->withToken($this->userToken)
             ->patchJson(route('products.update', 1), $this->product->toArray())
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function testProductDestroySuccessForAdminExpectHttp_200()
+    public function testProductDestroySuccessForAdminExpectHttpOk()
     {
         $this->withToken($this->adminToken)
             ->delete(route('products.destroy', $this->product->id))
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testProductDestroySuccessForUserExpectHttp_403()
+    public function testProductDestroySuccessForUserExpectHttpForbidden()
     {
         $this->withToken($this->userToken)
             ->delete(route('products.destroy', $this->product->id))

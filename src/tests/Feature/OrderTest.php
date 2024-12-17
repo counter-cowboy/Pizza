@@ -76,6 +76,35 @@ class OrderTest extends TestCase
             ->assertStatus(Response::HTTP_CREATED);
     }
 
+    public function testOrderStoreForUserFailedExpectHttpUnprocessableEntity()
+    {
+        $this->withToken($this->userToken)
+            ->postJson(route('orders.store', [
+                'total_amount' => $this->faker->randomFloat(2, 1, 200),
+                'status' => $this->faker->randomElement(['in_progress', 'delivering',]),
+                'address' => $this->faker->address(),
+                'phone' => $this->faker->phoneNumber(),
+                'email' => $this->faker->unique()->safeEmail(),
+                'delivery_time' => Carbon::now()->addHours(2)
+                    ->toDateTimeString(),
+
+                'products' => [
+                    [
+                        'product_id' => 3,
+                        'quantity' => 40
+                    ],
+                    [
+                        'product_id' => 5,
+                        'quantity' => 223
+                    ]
+                ],
+                'user_id' => $this->user->id,
+            ]))
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+//            ->assertJsonFragment(['pizzas' => 'You can order no more than 10 pizzas'])
+            ->assertJsonFragment(['drinks' => 'You can order no more than 10 drinks']);
+    }
+
     public function testOrderStoreForUnauthorizedFailExpectHttp401()
     {
         $this->postJson(route('orders.store'), $this->order)
@@ -91,7 +120,7 @@ class OrderTest extends TestCase
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testOrderUpdateForUserSuccessExpectHttp_200()
+    public function testOrderUpdateForUserSuccessExpectHttpOk()
     {
         $order = $this->user->order()->create($this->order);
 
@@ -112,6 +141,31 @@ class OrderTest extends TestCase
                 ]
             )
             ->assertStatus(Response::HTTP_OK);
+    }
+
+    public function testOrderUpdateForUserFailExceedMaxCountExpectHttpUnprocessableEntity()
+    {
+        $order = $this->user->order()->create($this->order);
+
+        $this->withToken(JWTAuth::fromUser($this->user))
+            ->patchJson(
+                route('orders.update', $order->id),
+                [
+                    'products' => [
+                        [
+                            'product_id' => 2,
+                            'quantity' => 25
+                        ],
+                        [
+                            'product_id' => 5,
+                            'quantity' => 25
+                        ]
+                    ],
+                ]
+            )
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+//        ->assertJsonFragment(['pizzas' => 'You can order no more than 10 pizzas'])
+            ->assertJsonFragment(['drinks' => 'You can order no more than 10 drinks']);
     }
 
     public function testOrderCancelFofUserSuccessExpectHttp200()

@@ -29,31 +29,61 @@ class OrderController extends Controller
 
     public function store(
         OrderRequest                $request,
-        OrderService                $service,
-        OrderValidationCountService $orderValidation
+        OrderService                $orderService,
+        OrderValidationCountService $orderValidationCountService
     ): OrderResource|JsonResponse {
+
         $this->authorize('create', Order::class);
 
-        $user_id = $request->user()->id;
+        $userId = $request->user()->id;
 
         $data = $request->validated();
-        $errors = $orderValidation->validateProductCount($data['products']);
+        $errors = $orderValidationCountService->validateProductCount($data['products']);
+
 
         $jsonErrors = [];
 
         if (!empty($errors)) {
 
-            foreach ($errors as $error => $value) {
+            foreach ($errors as $value) {
                 $jsonErrors[] = $value;
             }
             return response()->json($jsonErrors, Response::HTTP_UNPROCESSABLE_ENTITY);
 
         } else {
-            $order = $service->store($user_id, $data);
+            $order = $orderService->store($userId, $data);
 
             return new OrderResource($order);
         }
     }
+
+    public function update(
+        OrderUpdateRequest          $request,
+        Order                       $order,
+        OrderValidationCountService $orderValidationCountService
+    ): JsonResponse|OrderResource
+    {
+        $this->authorize('update', $order);
+        $data = $request->validated();
+        $errors = $orderValidationCountService->validateProductCount($data['products']);
+
+        $jsonErrors = [];
+
+        if (!empty($errors)) {
+
+            foreach ($errors as $value) {
+                $jsonErrors[] = $value;
+            }
+            return response()->json($jsonErrors, Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        } else {
+            $order->update($data);
+
+
+            return new OrderResource($order);
+        }
+    }
+
 
     public function show(Order $order): OrderResource
     {
@@ -61,17 +91,6 @@ class OrderController extends Controller
 
         return new OrderResource($order);
     }
-
-
-    public function update(OrderUpdateRequest $request, Order $order): OrderResource
-    {
-        $this->authorize('update', $order);
-
-        $order->update($request->validated());
-
-        return new OrderResource($order);
-    }
-
 
     public function cancel(Order $order): JsonResponse
     {

@@ -10,6 +10,12 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CategoryTest extends TestCase
 {
+    private User $user;
+    private User $admin;
+    private array $category;
+    private string $userToken;
+    private string $adminToken;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -30,13 +36,13 @@ class CategoryTest extends TestCase
         parent::tearDown();
     }
 
-    public function testCategoryIndexSuccessForAllExpectHttp200()
+    public function testCategoryIndexSuccessForAllExpectHttpOk()
     {
         $response = $this->get(route('categories.index'));
         $response->assertStatus(Response::HTTP_OK);
     }
 
-    public function testCategoryStoreFailedForAdminWithEmptyCategoryNameExpectHttp422()
+    public function testCategoryStoreFailedForAdminWithEmptyCategoryNameExpectHttpUnprocessableEntity()
     {
         $response = $this->withToken($this->adminToken)
             ->postJson(route('categories.store'), ['name' => '']);
@@ -45,7 +51,7 @@ class CategoryTest extends TestCase
             ->assertJsonFragment(['name' => ['The name field is required.']]);
     }
 
-    public function testCategoryStoreFailedForNonAuthorizedExpectHttp403()
+    public function testCategoryStoreFailedForNonAuthorizedExpectHttpForbidden()
     {
         $response = $this->withToken($this->userToken)
             ->postJson(
@@ -55,20 +61,20 @@ class CategoryTest extends TestCase
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function testCategoryStoreSuccessForAdminExpectHttp201()
+    public function testCategoryStoreSuccessForAdminExpectHttpCreated()
     {
         $this->withToken($this->adminToken)
             ->postJson(route('categories.store'), $this->category)
             ->assertStatus(Response::HTTP_CREATED);
     }
 
-    public function testCategoryShowSuccessForAllExpectHttp200()
+    public function testCategoryShowSuccessForAllExpectHttpOk()
     {
         $this->get('/api/categories/1')
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testCategoryUpdateFailedForAdminWithEmptyCategoryNameExpectHttp422()
+    public function testCategoryUpdateFailedForAdminWithEmptyCategoryNameExpectHttpUnprocessableEntity()
     {
         $response = $this->withToken($this->adminToken)
             ->patchJson(
@@ -87,7 +93,7 @@ class CategoryTest extends TestCase
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testCategoryUpdateFailedForNonAuthorizedExpectHttp403()
+    public function testCategoryUpdateFailedForNonAuthorizedExpectHttpForbidden()
     {
         $this->withToken($this->userToken)
             ->patchJson(

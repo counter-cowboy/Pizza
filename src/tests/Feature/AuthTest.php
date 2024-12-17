@@ -11,6 +11,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthTest extends TestCase
 {
+    private array $userData;
+    private User $user;
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,43 +31,52 @@ class AuthTest extends TestCase
         parent::tearDown();
     }
 
-    public function testLoginSuccessExpectHttp200()
+    public function testLoginSuccessExpectHttpOk()
     {
         $this->postJson(route('login'), $this->userData)
             ->assertStatus(200);
     }
 
-    public function testLoginFailInvalidEmailExpectHttp401()
+    public function testLoginFailInvalidEmailExpectHttpUnprocessableEntity()
     {
         $this->postJson(route('login'), [
             'email' => '1112@2.qw',
             'password' => '123456'
         ])
-            ->assertStatus(Response::HTTP_UNAUTHORIZED);
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function testLoginFailInvalidPasswordExpect401()
+    public function testLoginFailNoEmailExpectHttpUnprocessableEntity()
+    {
+        $this->postJson(route('login'), [
+//            'email' => null,
+            'password' => '123456'
+        ])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testLoginFailInvalidPasswordExpectUnprocessableEntity()
     {
         $this->postJson(route('login'), [
             'email' => '2@2.qw',
             'password' => '12345678'
-        ])->assertStatus(Response::HTTP_UNAUTHORIZED);
+        ])->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function testLogoutSuccessExpectHttp200()
+    public function testLogoutSuccessExpectHttpOk()
     {
         $this->withToken(JWTAuth::fromUser($this->user))
             ->postJson(route('logout'))
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testLogoutFailWithoutTokenExpectHttp401()
+    public function testLogoutFailWithoutTokenExpectHttpUnauthorized()
     {
         $this->postJson(route('logout'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testRefreshTokenSuccessExpectHttp200()
+    public function testRefreshTokenSuccessExpectHttpOk()
     {
         $this->withToken(JWTAuth::fromUser($this->user))
             ->postJson(route('refresh'))

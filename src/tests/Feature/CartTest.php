@@ -11,6 +11,11 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CartTest extends TestCase
 {
+    private User $user;
+    private User $admin;
+    private Cart $cart;
+    private string $userToken;
+    private string $adminToken;
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,34 +34,34 @@ class CartTest extends TestCase
         parent::tearDown();
     }
 
-    public function testCartIndexForAdminSuccessExpectHttp_200()
+    public function testCartIndexForAdminSuccessExpectHttpOk()
     {
         $this->withToken($this->adminToken)
             ->get(route('carts.index'))
             ->assertStatus(Response::HTTP_OK);
     }
 
-    public function testCartIndexForUserFailedExpectHttp_403()
+    public function testCartIndexForUserFailedExpectHttpForbidden()
     {
         $this->withToken($this->userToken)
             ->get(route('carts.index'))
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function testCartStoreForNonAuthenticatedSuccessExpectHttp_201()
+    public function testCartStoreForNonAuthenticatedSuccessExpectHttpCreated()
     {
         $this->postJson(route('carts.store'), ['product_id' => 2])
             ->assertStatus(Response::HTTP_CREATED);
     }
 
-    public function testCartStoreForAuthenticatedSuccessExpectHttp_201()
+    public function testCartStoreForAuthenticatedSuccessExpectHttpCreated()
     {
         $this->withToken($this->userToken)
             ->postJson(route('carts.store'), ['product_id' => 2])
             ->assertStatus(Response::HTTP_CREATED);
     }
 
-    public function testCartShowForUserSuccessExpect_200()
+    public function testCartShowForUserSuccessExpectOk()
     {
         // Create cart with binding to user
         $this->withToken($this->userToken)
